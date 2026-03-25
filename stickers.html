@@ -50,9 +50,10 @@
     /* ── HEADER & STEALTH LOCK ── */
     .header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       margin-bottom: 24px;
+      position: relative;
       /* Added a slight text shadow to make the title pop over bright images */
       text-shadow: 0 2px 10px rgba(0,0,0,0.5); 
     }
@@ -65,6 +66,8 @@
     }
 
     .stealth-lock {
+      position: absolute;
+      right: 0;
       background: none;
       border: none;
       font-size: 24px;
@@ -288,8 +291,11 @@
     }
 
     @media (max-width: 600px) {
+      body { padding: 16px; }
       .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-      .cell { font-size: 18px; }
+      .board-container { padding: 16px; }
+      .grid { gap: 4px; }
+      .cell { font-size: 16px; border-radius: 6px; }
     }
   </style>
 </head>
@@ -622,4 +628,5 @@
   init();
 </script>
 </body>
-</html>
+  </html>
+  
