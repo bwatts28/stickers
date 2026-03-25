@@ -87,10 +87,10 @@
     }
     
     .tab-btn {
-      /* Glassy background */
-      background: rgba(22, 22, 20, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      /* Thinner Glassy background */
+      background: rgba(22, 22, 20, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       color: var(--text-dim);
       padding: 12px 24px;
@@ -119,10 +119,10 @@
     }
 
     .stat-card {
-      /* Glassy background */
-      background: rgba(22, 22, 20, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      /* Thinner Glassy background */
+      background: rgba(22, 22, 20, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 20px;
@@ -152,10 +152,10 @@
 
     /* ── THE 10x10 GRID ── */
     .board-container {
-      /* Glassy background */
-      background: rgba(22, 22, 20, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      /* Thinner Glassy background */
+      background: rgba(22, 22, 20, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 24px;
@@ -379,9 +379,9 @@
       const response = await fetch(API_URL);
       const data = await response.json();
       
-      // 🌟 NEW: Lighter background gradient, mobile-friendly positioning, no fixed attachment
+      // 🌟 NEW: Lighter background gradient (0.15 instead of 0.4) so the image pops out more!
       if (data.backgroundUrl) {
-        document.body.style.backgroundImage = `linear-gradient(rgba(13, 13, 11, 0.4), rgba(13, 13, 11, 0.4)), url('${data.backgroundUrl}')`;
+        document.body.style.backgroundImage = `linear-gradient(rgba(13, 13, 11, 0.15), rgba(13, 13, 11, 0.15)), url('${data.backgroundUrl}')`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center top';
         // Note: backgroundAttachment: 'fixed' is purposely removed for mobile compatibility
@@ -628,5 +628,4 @@
   init();
 </script>
 </body>
-  </html>
-  
+</html>
