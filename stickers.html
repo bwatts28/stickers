@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Sticker Tracker</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ═══════════════════════════════════════ */
+    /* DESIGN SYSTEM                           */
+    /* ═══════════════════════════════════════ */
+    :root {
+      --dark: #0d0d0b;
+      --surface: #161614;
+      --surface-2: #1e1e1b;
+      --border: rgba(255,255,255,0.08);
+      --text: #eaeae5;
+      --text-dim: rgba(255,255,255,0.55);
+      --gold: #FBAF33;
+      --green: #2ecc71;
+      --red: #D31C1C;
+      --accent: #c88bff; /* Default profile color */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* ── HEADER & STEALTH LOCK ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .stealth-lock {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--surface-2); /* Hidden in plain sight */
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .stealth-lock.unlocked { color: var(--gold); }
+
+    /* ── PROFILE TABS ── */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    
+    .tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    
+    .tab-btn.active {
+      background: var(--surface-2);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* ── STATS CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      line-height: 1;
+    }
+    .stat-value.gold { color: var(--gold); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.accent { color: var(--accent); }
+
+    /* ── THE 10x10 GRID ── */
+    .board-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.3s;
+    }
+
+    .cell.filled {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--accent);
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── PARENT CONTROLS (GOD MODE) ── */
+    .parent-controls {
+      display: none; /* Hidden by default */
+      background: rgba(251, 175, 51, 0.05);
+      border: 1px solid rgba(251, 175, 51, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .parent-controls.active {
+      display: flex;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-add { background: var(--gold); color: #000; }
+    .btn-redeem { background: var(--green); color: #000; }
+    .btn-clear { background: var(--surface-3); color: var(--red); border: 1px solid rgba(211,28,28,0.3); }
+
+    /* ── TOAST NOTIFICATIONS ── */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface-2);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: slideUpToast 0.3s ease-out forwards;
+      opacity: 0;
+    }
+    .toast.success { border-color: var(--green); color: var(--green); }
+    .toast.error { border-color: var(--red); color: var(--red); }
+    .toast.fade-out { animation: fadeOutToast 0.3s ease-in forwards; }
+
+    @keyframes slideUpToast {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOutToast {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(10px); }
+    }
+
+    /* ── LOADER ── */
+    .loader {
+      text-align: center;
+      padding: 40px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+      .cell { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <div class="header">
+    <div class="title">Sticker <span style="color: var(--accent);" id="titleSpan">Tracker</span></div>
+    <button class="stealth-lock" id="lockIcon" onclick="triggerGodMode()">🔒</button>
+  </div>
+
+  <div id="tabsContainer" class="tabs">
+    </div>
+
+  <div id="loading" class="loader">Loading data from Google Sheets...</div>
+
+  <div id="mainContent" style="display: none;">
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Stickers</div>
+        <div class="stat-value accent" id="statActive">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Earned Tablet Time</div>
+        <div class="stat-value gold" id="statTime">0m</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rows Completed</div>
+        <div class="stat-value green" id="statRows">0</div>
+      </div>
+    </div>
+
+    <div class="board-container">
+      <div class="grid" id="boardGrid">
+        </div>
+    </div>
+
+    <div class="parent-controls" id="parentControls">
+      <button class="btn btn-add" onclick="handleAction('addSticker')">➕ Add Sticker</button>
+      <button class="btn btn-redeem" id="btnRedeem" onclick="handleAction('redeemRow')" disabled>🎉 Redeem Row (30m)</button>
+      <button class="btn btn-clear" onclick="handleAction('clearBoard')">⚠️ Reset Child</button>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+  // ==========================================
+  // 🔴 PASTE YOUR DEPLOYED WEB APP URL BELOW
+  // ==========================================
+  const API_URL = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
+
+  let STATE = {
+    kids: [],
+    activeChildIndex: 0,
+    isParent: false,
+    isProcessing: false
+  };
+
+  // --- 1. INITIALIZATION ---
+  async function init() {
+    // Check if Parent Mode was unlocked in a previous session
+    if (sessionStorage.getItem('parentSecret')) {
+      STATE.isParent = true;
+      document.getElementById('lockIcon').classList.add('unlocked');
+      document.getElementById('parentControls').classList.add('active');
+    }
+
+    await fetchData();
+  }
+
+  // --- 2. DATA FETCHING ---
+  async function fetchData() {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      
+      if (data.kids && data.kids.length > 0) {
+        STATE.kids = data.kids;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        renderApp();
+      } else {
+        document.getElementById('loading').innerText = "No children found in the spreadsheet.";
+      }
+    } catch (e) {
+      document.getElementById('loading').innerText = "Error connecting to database. Check API URL.";
+      console.error(e);
+    }
+  }
+
+  // --- 3. RENDERING ---
+  function renderApp() {
+    renderTabs();
+    updateUI();
+  }
+
+  function renderTabs() {
+    const container = document.getElementById('tabsContainer');
+    container.innerHTML = '';
+    
+    STATE.kids.forEach((kid, index) => {
+      const btn = document.createElement('button');
+      btn.className = `tab-btn ${index === STATE.activeChildIndex ? 'active' : ''}`;
+      btn.innerText = kid.name;
+      btn.onclick = () => {
+        STATE.activeChildIndex = index;
+        renderApp();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  function updateUI() {
+    const kid = STATE.kids[STATE.activeChildIndex];
+    if (!kid) return;
+
+    // Set Theme Colors
+    document.documentElement.style.setProperty('--accent', kid.color || '#c88bff');
+    document.getElementById('titleSpan').style.color = 'var(--accent)';
+
+    // Math Logic
+    const activeStickers = kid.totalStickers - kid.redeemedStickers;
+    const rowsCompleted = Math.floor(kid.redeemedStickers / 10);
+    const tabletTime = rowsCompleted * 30;
+
+    // Update Stats
+    document.getElementById('statActive').innerText = activeStickers;
+    document.getElementById('statTime').innerText = tabletTime + 'm';
+    document.getElementById('statRows').innerText = rowsCompleted;
+
+    // Update Grid (100 cells max)
+    const grid = document.getElementById('boardGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < 100; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (i < activeStickers) {
+        cell.classList.add('filled');
+        cell.innerText = kid.icon;
+      }
+      grid.appendChild(cell);
+    }
+
+    // Parent Controls Logic
+    const btnRedeem = document.getElementById('btnRedeem');
+    if (activeStickers >= 10) {
+      btnRedeem.disabled = false;
+      btnRedeem.innerText = `🎉 Redeem Row (30m)`;
+    } else {
+      btnRedeem.disabled = true;
+      btnRedeem.innerText = `Need ${10 - (activeStickers % 10)} more for Row`;
+    }
+  }
+
+  // --- 4. GOD MODE LOGIC ---
+  async function triggerGodMode() {
+    if (STATE.isParent) {
+      showToast("Parent Mode is already active", "success");
+      return;
+    }
+
+    const secret = prompt("🛡️ Parent Mode\n\nEnter the Master Password:");
+    if (!secret) return;
+
+    showToast("Verifying...", "neutral");
+
+    try {
+      const check = await fetch(`${API_URL}?function=verifyGodMode&secret=${encodeURIComponent(secret)}`);
+      const result = await check.json();
+      
+      if (!result.valid) {
+        showToast("❌ Incorrect Password", "error");
+        return;
+      }
+      
+      // Success
+      sessionStorage.setItem('parentSecret', secret);
+      STATE.isParent = true;
+      document.getElementById('lockIcon').classList.add('unlocked');
+      document.getElementById('parentControls').classList.add('active');
+      showToast("✅ Parent Mode Unlocked", "success");
+      
+    } catch(e) {
+      showToast("❌ Connection Error", "error");
+    }
+  }
+
+  // --- 5. API ACTIONS (OPTIMISTIC UI) ---
+  async function handleAction(action) {
+    if (!STATE.isParent || STATE.isProcessing) return;
+    
+    // Safety check for clear board
+    if (action === 'clearBoard') {
+      const confirmClear = confirm("Are you sure you want to reset all stickers for this child? This cannot be undone.");
+      if (!confirmClear) return;
+    }
+
+    const kid = STATE.kids[STATE.activeChildIndex];
+    const secret = sessionStorage.getItem('parentSecret');
+    STATE.isProcessing = true;
+
+    // 1. Optimistically update local UI immediately
+    const backupTotal = kid.totalStickers;
+    const backupRedeemed = kid.redeemedStickers;
+
+    if (action === 'addSticker') {
+      kid.totalStickers += 1;
+      showToast(`🌟 Added to ${kid.name}!`, "success");
+    } else if (action === 'redeemRow') {
+      kid.redeemedStickers += 10;
+      showToast("🎉 Row Redeemed! 30 mins added.", "success");
+    } else if (action === 'clearBoard') {
+      kid.totalStickers = 0;
+      kid.redeemedStickers = 0;
+      showToast("⚠️ Board Reset.", "error");
+    }
+    
+    updateUI(); // Redraw grid instantly
+
+    // 2. Send to Google Sheets in background
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: action,
+          childName: kid.name,
+          secret: secret
+        })
+      });
+      const result = await response.json();
+      
+      if (!result.ok) {
+        // Revert on failure
+        throw new Error(result.error);
+      }
+    } catch (e) {
+      // If network fails or password changed, revert the optimistic update
+      kid.totalStickers = backupTotal;
+      kid.redeemedStickers = backupRedeemed;
+      updateUI();
+      showToast("❌ Save Failed: " + e.message, "error");
+      
+      if (e.message.includes("Password")) {
+        sessionStorage.removeItem('parentSecret');
+        location.reload(); // Force them out of God Mode
+      }
+    } finally {
+      STATE.isProcessing = false;
+    }
+  }
+
+  // --- 6. TOAST ANIMATIONS ---
+  function showToast(msg, type = "neutral") {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = msg;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      toast.addEventListener('animationend', () => toast.remove());
+    }, 3000);
+  }
+
+  // Boot up the app
+  init();
+</script>
+</body>
+</html>
