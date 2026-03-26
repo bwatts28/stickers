@@ -193,6 +193,51 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+/* ── TASKS SECTION ── */
+    .tasks-container {
+      margin-bottom: 24px;
+    }
+
+    .tasks-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .tasks-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .task-badge {
+      /* Matching the glassmorphic style */
+      background: rgba(22, 22, 20, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .task-reward {
+      background: var(--gold);
+      color: #000;
+      font-weight: 800;
+      border-radius: 50px;
+      padding: 2px 8px;
+      font-size: 13px;
+    }
+    
     /* ── PARENT CONTROLS (GOD MODE) ── */
     .parent-controls {
       display: none; 
@@ -335,6 +380,11 @@
         </div>
     </div>
 
+    <div class="tasks-container" id="tasksContainer" style="display: none;">
+      <div class="tasks-title">Ways to earn stickers</div>
+      <div class="tasks-list" id="tasksList"></div>
+    </div>
+
     <div class="parent-controls" id="parentControls">
       <button class="btn btn-add" onclick="handleStickerClick(1)">➕ Add</button>
       <button class="btn btn-undo" onclick="handleStickerClick(-1)">➖ Undo</button>
@@ -356,6 +406,7 @@
 
   let STATE = {
     kids: [],
+    tasks: [],
     activeChildIndex: 0,
     isParent: false,
     isProcessing: false,
@@ -389,6 +440,7 @@
       
       if (data.kids && data.kids.length > 0) {
         STATE.kids = data.kids;
+        STATE.tasks = data.tasks || [];
         document.getElementById('loading').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         renderApp();
@@ -459,8 +511,31 @@
       btnRedeem.disabled = true;
       btnRedeem.innerText = `Need ${10 - (activeStickers % 10)} more for Row`;
     }
-  }
 
+    // 👇 MOVED INSIDE updateUI() 👇
+    // --- Render Tasks ---
+    const tasksContainer = document.getElementById('tasksContainer');
+    const tasksList = document.getElementById('tasksList');
+    
+    if (STATE.tasks.length > 0) {
+      tasksContainer.style.display = 'block';
+      tasksList.innerHTML = ''; // Clear previous
+      
+      STATE.tasks.forEach(task => {
+        const badge = document.createElement('div');
+        badge.className = 'task-badge';
+        badge.innerHTML = `
+          <span>${task.name}</span>
+          <span class="task-reward" style="background: var(--accent);">+${task.reward}</span>
+        `;
+        tasksList.appendChild(badge);
+      });
+    } else {
+      tasksContainer.style.display = 'none';
+    }
+  } 
+  // 👆 END OF updateUI() 👆
+  
   // --- 4. GOD MODE LOGIC ---
   async function triggerGodMode() {
     if (STATE.isParent) {
