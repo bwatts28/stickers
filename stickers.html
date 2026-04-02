@@ -193,7 +193,7 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-/* ── TASKS SECTION ── */
+    /* ── TASKS SECTION ── */
     .tasks-container {
       margin-bottom: 24px;
     }
@@ -512,7 +512,6 @@
       btnRedeem.innerText = `Need ${10 - (activeStickers % 10)} more for Row`;
     }
 
-    // 👇 MOVED INSIDE updateUI() 👇
     // --- Render Tasks ---
     const tasksContainer = document.getElementById('tasksContainer');
     const tasksList = document.getElementById('tasksList');
@@ -542,6 +541,10 @@
         `;
         tasksList.appendChild(badge);
       });
+    } else {
+      tasksContainer.style.display = 'none';
+    }
+  } 
   
   // --- 4. GOD MODE LOGIC ---
   async function triggerGodMode() {
