@@ -524,17 +524,24 @@
       STATE.tasks.forEach(task => {
         const badge = document.createElement('div');
         badge.className = 'task-badge';
+        
+        // 1. Capitalize the first letter (Sentence Case)
+        const formattedName = task.name.charAt(0).toUpperCase() + task.name.slice(1);
+        
+        // 2. Format the reward text
+        let rewardDisplay = String(task.reward).trim();
+        // If it's a regular number (like "2"), add a "+" in front. 
+        // If it's text/range (like "1-5" or "1 to 3"), leave it exactly as you wrote it in the sheet.
+        if (!isNaN(rewardDisplay) && rewardDisplay !== '') {
+          rewardDisplay = '+' + rewardDisplay;
+        }
+
         badge.innerHTML = `
-          <span>${task.name}</span>
-          <span class="task-reward" style="background: var(--accent);">+${task.reward}</span>
+          <span>${formattedName}</span>
+          <span class="task-reward" style="background: var(--accent);">${rewardDisplay}</span>
         `;
         tasksList.appendChild(badge);
       });
-    } else {
-      tasksContainer.style.display = 'none';
-    }
-  } 
-  // 👆 END OF updateUI() 👆
   
   // --- 4. GOD MODE LOGIC ---
   async function triggerGodMode() {
