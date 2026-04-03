@@ -193,6 +193,19 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* NEW: Clickable Board Cells for Parents */
+    .cell.clickable-empty { cursor: pointer; }
+    .cell.clickable-empty:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .cell.clickable-filled { cursor: pointer; }
+    .cell.clickable-filled:hover {
+      background: rgba(211,28,28,0.2); /* faint red hint */
+      border-color: var(--red);
+      transform: scale(0.92);
+    }
+
     /* ── TASKS SECTION ── */
     .tasks-container {
       margin-bottom: 24px;
@@ -236,6 +249,19 @@
       border-radius: 50px;
       padding: 2px 8px;
       font-size: 13px;
+    }
+
+    /* NEW: Clickable Task Badges for Parents */
+    .task-badge.clickable-task {
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.2s;
+    }
+    .task-badge.clickable-task:hover {
+      border-color: var(--gold);
+      transform: scale(1.05);
+    }
+    .task-badge.clickable-task:active {
+      transform: scale(0.95);
     }
     
     /* ── PARENT CONTROLS (GOD MODE) ── */
@@ -493,13 +519,29 @@
 
     const grid = document.getElementById('boardGrid');
     grid.innerHTML = '';
+    
+    // --- RENDER GRID WITH CLICKABLE CELLS ---
     for (let i = 0; i < 100; i++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
-      if (i < activeStickers) {
+      const isFilled = i < activeStickers;
+
+      if (isFilled) {
         cell.classList.add('filled');
         cell.innerText = kid.icon;
       }
+
+      // Make grid cells clickable in God Mode
+      if (STATE.isParent) {
+        if (isFilled) {
+          cell.classList.add('clickable-filled');
+          cell.onclick = () => handleStickerClick(-1);
+        } else {
+          cell.classList.add('clickable-empty');
+          cell.onclick = () => handleStickerClick(1);
+        }
+      }
+
       grid.appendChild(cell);
     }
 
@@ -512,7 +554,7 @@
       btnRedeem.innerText = `Need ${10 - (activeStickers % 10)} more for Row`;
     }
 
-    // --- Render Tasks ---
+    // --- RENDER TASKS WITH CLICKABLE BADGES ---
     const tasksContainer = document.getElementById('tasksContainer');
     const tasksList = document.getElementById('tasksList');
     
@@ -529,8 +571,6 @@
         
         // 2. Format the reward text
         let rewardDisplay = String(task.reward).trim();
-        // If it's a regular number (like "2"), add a "+" in front. 
-        // If it's text/range (like "1-5" or "1 to 3"), leave it exactly as you wrote it in the sheet.
         if (!isNaN(rewardDisplay) && rewardDisplay !== '') {
           rewardDisplay = '+' + rewardDisplay;
         }
@@ -539,6 +579,32 @@
           <span>${formattedName}</span>
           <span class="task-reward" style="background: var(--accent);">${rewardDisplay}</span>
         `;
+
+        // 3. Make them clickable ONLY if God Mode is active
+        if (STATE.isParent) {
+          badge.classList.add('clickable-task');
+          badge.onclick = () => {
+            let amountToAdd = 0;
+            const rawReward = String(task.reward).trim();
+            
+            // If it's a standard number, add it instantly
+            if (!isNaN(rawReward) && rawReward !== '') {
+              amountToAdd = parseInt(rawReward, 10);
+            } else {
+              // If it's a range (like 1-5), ask the parent how many to add
+              const input = prompt(`How many stickers did they earn for:\n"${formattedName}"\n(Suggested: ${rawReward})`);
+              if (!input || input.trim() === '') return; 
+              
+              amountToAdd = parseInt(input, 10);
+              if (isNaN(amountToAdd) || amountToAdd <= 0) {
+                showToast("Please enter a valid number.", "error");
+                return;
+              }
+            }
+            handleStickerClick(amountToAdd);
+          };
+        }
+
         tasksList.appendChild(badge);
       });
     } else {
@@ -572,6 +638,9 @@
       document.getElementById('lockIcon').classList.add('unlocked');
       document.getElementById('parentControls').classList.add('active');
       showToast("✅ Parent Mode Unlocked", "success");
+      
+      // Force UI to re-render to attach the clickable properties to grid and badges
+      updateUI();
       
     } catch(e) {
       showToast("❌ Connection Error", "error");
