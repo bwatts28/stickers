@@ -414,7 +414,8 @@
     <div class="parent-controls" id="parentControls">
       <button class="btn btn-add" onclick="handleStickerClick(1)">➕ Add</button>
       <button class="btn btn-undo" onclick="handleStickerClick(-1)">➖ Undo</button>
-      <button class="btn btn-redeem" id="btnRedeem" onclick="handleAction('redeemRow')" disabled>🎉 Redeem Row (30m)</button>
+      <button class="btn btn-redeem" id="btnRedeemHalf" onclick="handleAction('redeemHalf')" disabled>✨ Redeem 5 (15m)</button>
+      <button class="btn btn-redeem" id="btnRedeemRow" onclick="handleAction('redeemRow')" disabled>🎉 Redeem 10 (30m)</button>
       <button class="btn btn-clear" onclick="handleAction('clearBoard')">⚠️ Reset Child</button>
     </div>
 
@@ -510,8 +511,8 @@
     document.getElementById('titleSpan').style.color = 'var(--accent)';
 
     const activeStickers = kid.totalStickers - kid.redeemedStickers;
-    const rowsCompleted = Math.floor(kid.redeemedStickers / 10);
-    const tabletTime = rowsCompleted * 30;
+const rowsCompleted = Math.floor(kid.redeemedStickers / 10);
+const tabletTime = kid.redeemedStickers * 3; // 3 mins per sticker (5 = 15m, 10 = 30m)
 
     document.getElementById('statActive').innerText = activeStickers;
     document.getElementById('statTime').innerText = tabletTime + 'm';
@@ -545,14 +546,23 @@
       grid.appendChild(cell);
     }
 
-    const btnRedeem = document.getElementById('btnRedeem');
-    if (activeStickers >= 10) {
-      btnRedeem.disabled = false;
-      btnRedeem.innerText = `🎉 Redeem Row (30m)`;
-    } else {
-      btnRedeem.disabled = true;
-      btnRedeem.innerText = `Need ${10 - (activeStickers % 10)} more for Row`;
-    }
+    const btnRedeemHalf = document.getElementById('btnRedeemHalf');
+if (activeStickers >= 5) {
+  btnRedeemHalf.disabled = false;
+  btnRedeemHalf.innerText = `✨ Redeem 5 (15m)`;
+} else {
+  btnRedeemHalf.disabled = true;
+  btnRedeemHalf.innerText = `Need ${5 - (activeStickers % 5)} more for 15m`;
+}
+
+const btnRedeemRow = document.getElementById('btnRedeemRow');
+if (activeStickers >= 10) {
+  btnRedeemRow.disabled = false;
+  btnRedeemRow.innerText = `🎉 Redeem 10 (30m)`;
+} else {
+  btnRedeemRow.disabled = true;
+  btnRedeemRow.innerText = `Need ${10 - (activeStickers % 10)} more for 30m`;
+}
 
     // --- RENDER TASKS WITH CLICKABLE BADGES ---
     const tasksContainer = document.getElementById('tasksContainer');
@@ -733,9 +743,12 @@
     const backupRedeemed = kid.redeemedStickers;
 
     if (action === 'redeemRow') {
-      kid.redeemedStickers += 10;
-      showToast("🎉 Row Redeemed! 30 mins added.", "success");
-    } else if (action === 'clearBoard') {
+  kid.redeemedStickers += 10;
+  showToast("🎉 10 Stickers Redeemed! 30 mins added.", "success");
+} else if (action === 'redeemHalf') {
+  kid.redeemedStickers += 5;
+  showToast("✨ 5 Stickers Redeemed! 15 mins added.", "success");
+} else if (action === 'clearBoard') {
       kid.totalStickers = 0;
       kid.redeemedStickers = 0;
       showToast("⚠️ Board Reset.", "error");
