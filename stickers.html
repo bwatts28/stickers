@@ -113,7 +113,7 @@
     /* ── STATS CARDS ── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
       margin-bottom: 32px;
     }
@@ -150,120 +150,40 @@
     .stat-value.green { color: var(--green); }
     .stat-value.accent { color: var(--accent); }
 
-    /* ── THE 10x10 GRID ── */
-    .board-container {
-      /* Thinner Glassy background */
-      background: rgba(22, 22, 20, 0.4);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 8px;
-    }
-
-    .cell {
-      aspect-ratio: 1;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 8px;
+    /* ── FREE-FORM AMOUNT INPUT ── */
+    .input-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      transition: all 0.3s;
-    }
-
-    .cell.filled {
-      background: rgba(255,255,255,0.1);
-      border-color: var(--accent);
-      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* NEW: Clickable Board Cells for Parents */
-    .cell.clickable-empty { cursor: pointer; }
-    .cell.clickable-empty:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.2);
-    }
-    .cell.clickable-filled { cursor: pointer; }
-    .cell.clickable-filled:hover {
-      background: rgba(211,28,28,0.2); /* faint red hint */
-      border-color: var(--red);
-      transform: scale(0.92);
-    }
-
-    /* ── TASKS SECTION ── */
-    .tasks-container {
-      margin-bottom: 24px;
-    }
-
-    .tasks-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-      text-align: center;
-      letter-spacing: 1px;
-    }
-
-    .tasks-list {
-      display: flex;
+      gap: 12px;
+      width: 100%;
       flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
     }
 
-    .task-badge {
-      /* Matching the glassmorphic style */
-      background: rgba(22, 22, 20, 0.4);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    .sticker-input {
+      flex: 1 1 120px;
+      min-width: 0;
+      padding: 14px 18px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+      background: rgba(0,0,0,0.25);
       border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 6px 14px 6px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
     }
+    .sticker-input::placeholder { color: var(--text-dim); font-weight: 500; }
+    .sticker-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200, 139, 255, 0.15);
+    }
+    /* Hide number spinners */
+    .sticker-input::-webkit-outer-spin-button,
+    .sticker-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-    .task-reward {
-      background: var(--gold);
-      color: #000;
-      font-weight: 800;
-      border-radius: 50px;
-      padding: 2px 8px;
-      font-size: 13px;
-    }
 
-    /* NEW: Clickable Task Badges for Parents */
-    .task-badge.clickable-task {
-      cursor: pointer;
-      transition: transform 0.1s, border-color 0.2s;
-    }
-    .task-badge.clickable-task:hover {
-      border-color: var(--gold);
-      transform: scale(1.05);
-    }
-    .task-badge.clickable-task:active {
-      transform: scale(0.95);
-    }
-    
     /* ── PARENT CONTROLS (GOD MODE) ── */
     .parent-controls {
       display: none; 
@@ -306,7 +226,6 @@
     .btn-add { background: var(--gold); color: #000; box-shadow: 0 4px 10px rgba(251, 175, 51, 0.3); }
     .btn-undo { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
     .btn-undo:hover { background: rgba(255,255,255,0.15); }
-    .btn-redeem { background: var(--green); color: #000; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); }
     .btn-clear { background: rgba(211,28,28,0.1); color: var(--red); border: 1px solid rgba(211,28,28,0.3); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
 
     /* ── TOAST NOTIFICATIONS ── */
@@ -364,9 +283,6 @@
     @media (max-width: 600px) {
       body { padding: 16px; }
       .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-      .board-container { padding: 16px; }
-      .grid { gap: 4px; }
-      .cell { font-size: 16px; border-radius: 6px; }
     }
   </style>
 </head>
@@ -388,35 +304,22 @@
     
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Active Stickers</div>
+        <div class="stat-label">Stickers</div>
         <div class="stat-value accent" id="statActive">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Earned Tablet Time</div>
-        <div class="stat-value gold" id="statTime">0m</div>
+        <div class="stat-label">Money Earned</div>
+        <div class="stat-value gold" id="statValue">£0.00</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Rows Completed</div>
-        <div class="stat-value green" id="statRows">0</div>
-      </div>
-    </div>
-
-    <div class="board-container">
-      <div class="grid" id="boardGrid">
-        </div>
-    </div>
-
-    <div class="tasks-container" id="tasksContainer" style="display: none;">
-      <div class="tasks-title">Ways to earn stickers</div>
-      <div class="tasks-list" id="tasksList"></div>
     </div>
 
     <div class="parent-controls" id="parentControls">
-      <button class="btn btn-add" onclick="handleStickerClick(1)">➕ Add</button>
-      <button class="btn btn-undo" onclick="handleStickerClick(-1)">➖ Undo</button>
-      <button class="btn btn-redeem" id="btnRedeemHalf" onclick="handleAction('redeemHalf')" disabled>✨ Redeem 5 (15m)</button>
-      <button class="btn btn-redeem" id="btnRedeemRow" onclick="handleAction('redeemRow')" disabled>🎉 Redeem 10 (30m)</button>
-      <button class="btn btn-clear" onclick="handleAction('clearBoard')">⚠️ Reset Child</button>
+      <div class="input-row">
+        <input type="number" id="stickerInput" class="sticker-input" placeholder="e.g. 5" min="1" inputmode="numeric">
+        <button class="btn btn-add" onclick="addFromInput(1)">➕ Add</button>
+        <button class="btn btn-undo" onclick="addFromInput(-1)">➖ Remove</button>
+      </div>
+      <button class="btn btn-clear" onclick="handleAction('clearBoard')">⚠️ Reset (Paid Out)</button>
     </div>
 
   </div>
@@ -448,6 +351,15 @@
       document.getElementById('lockIcon').classList.add('unlocked');
       document.getElementById('parentControls').classList.add('active');
     }
+
+    // Let the parent press Enter in the box to add stickers
+    const stickerInput = document.getElementById('stickerInput');
+    if (stickerInput) {
+      stickerInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') addFromInput(1);
+      });
+    }
+
     await fetchData();
   }
 
@@ -511,117 +423,30 @@
     document.getElementById('titleSpan').style.color = 'var(--accent)';
 
     const activeStickers = kid.totalStickers - kid.redeemedStickers;
-const rowsCompleted = Math.floor(kid.redeemedStickers / 10);
-const tabletTime = kid.redeemedStickers * 3; // 3 mins per sticker (5 = 15m, 10 = 30m)
 
     document.getElementById('statActive').innerText = activeStickers;
-    document.getElementById('statTime').innerText = tabletTime + 'm';
-    document.getElementById('statRows').innerText = rowsCompleted;
-
-    const grid = document.getElementById('boardGrid');
-    grid.innerHTML = '';
-    
-    // --- RENDER GRID WITH CLICKABLE CELLS ---
-    for (let i = 0; i < 100; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      const isFilled = i < activeStickers;
-
-      if (isFilled) {
-        cell.classList.add('filled');
-        cell.innerText = kid.icon;
-      }
-
-      // Make grid cells clickable in God Mode
-      if (STATE.isParent) {
-        if (isFilled) {
-          cell.classList.add('clickable-filled');
-          cell.onclick = () => handleStickerClick(-1);
-        } else {
-          cell.classList.add('clickable-empty');
-          cell.onclick = () => handleStickerClick(1);
-        }
-      }
-
-      grid.appendChild(cell);
-    }
-
-    const btnRedeemHalf = document.getElementById('btnRedeemHalf');
-if (activeStickers >= 5) {
-  btnRedeemHalf.disabled = false;
-  btnRedeemHalf.innerText = `✨ Redeem 5 (15m)`;
-} else {
-  btnRedeemHalf.disabled = true;
-  btnRedeemHalf.innerText = `Need ${5 - (activeStickers % 5)} more for 15m`;
-}
-
-const btnRedeemRow = document.getElementById('btnRedeemRow');
-if (activeStickers >= 10) {
-  btnRedeemRow.disabled = false;
-  btnRedeemRow.innerText = `🎉 Redeem 10 (30m)`;
-} else {
-  btnRedeemRow.disabled = true;
-  btnRedeemRow.innerText = `Need ${10 - (activeStickers % 10)} more for 30m`;
-}
-
-    // --- RENDER TASKS WITH CLICKABLE BADGES ---
-    const tasksContainer = document.getElementById('tasksContainer');
-    const tasksList = document.getElementById('tasksList');
-    
-    if (STATE.tasks.length > 0) {
-      tasksContainer.style.display = 'block';
-      tasksList.innerHTML = ''; // Clear previous
-      
-      STATE.tasks.forEach(task => {
-        const badge = document.createElement('div');
-        badge.className = 'task-badge';
-        
-        // 1. Capitalize the first letter (Sentence Case)
-        const formattedName = task.name.charAt(0).toUpperCase() + task.name.slice(1);
-        
-        // 2. Format the reward text
-        let rewardDisplay = String(task.reward).trim();
-        if (!isNaN(rewardDisplay) && rewardDisplay !== '') {
-          rewardDisplay = '+' + rewardDisplay;
-        }
-
-        badge.innerHTML = `
-          <span>${formattedName}</span>
-          <span class="task-reward" style="background: var(--accent);">${rewardDisplay}</span>
-        `;
-
-        // 3. Make them clickable ONLY if God Mode is active
-        if (STATE.isParent) {
-          badge.classList.add('clickable-task');
-          badge.onclick = () => {
-            let amountToAdd = 0;
-            const rawReward = String(task.reward).trim();
-            
-            // If it's a standard number, add it instantly
-            if (!isNaN(rawReward) && rawReward !== '') {
-              amountToAdd = parseInt(rawReward, 10);
-            } else {
-              // If it's a range (like 1-5), ask the parent how many to add
-              const input = prompt(`How many stickers did they earn for:\n"${formattedName}"\n(Suggested: ${rawReward})`);
-              if (!input || input.trim() === '') return; 
-              
-              amountToAdd = parseInt(input, 10);
-              if (isNaN(amountToAdd) || amountToAdd <= 0) {
-                showToast("Please enter a valid number.", "error");
-                return;
-              }
-            }
-            handleStickerClick(amountToAdd);
-          };
-        }
-
-        tasksList.appendChild(badge);
-      });
-    } else {
-      tasksContainer.style.display = 'none';
-    }
+    document.getElementById('statValue').innerText = formatMoney(activeStickers);
   } 
   
+  // 100 stickers = £10  →  10p per sticker
+  function formatMoney(stickers) {
+    return '£' + (stickers / 10).toFixed(2);
+  }
+
+  // Add (or remove, when sign = -1) the number typed in the box
+  function addFromInput(sign) {
+    if (!STATE.isParent) return;
+    const input = document.getElementById('stickerInput');
+    const val = parseInt(input.value, 10);
+    if (isNaN(val) || val <= 0) {
+      showToast("Type a number first (e.g. 1, 5, 10)", "error");
+      return;
+    }
+    handleStickerClick(sign * val);
+    input.value = '';
+    input.focus();
+  }
+
   // --- 4. GOD MODE LOGIC ---
   async function triggerGodMode() {
     if (STATE.isParent) {
@@ -662,9 +487,9 @@ if (activeStickers >= 10) {
     if (!STATE.isParent) return;
     const kid = STATE.kids[STATE.activeChildIndex];
 
-    // Prevent undoing below what has already been redeemed
+    // Prevent removing more stickers than the child currently has
     if (amount < 0 && (kid.totalStickers + amount) < kid.redeemedStickers) {
-      showToast("Can't undo past redeemed stickers!", "error");
+      showToast("Not enough stickers to remove that many!", "error");
       return;
     }
 
@@ -706,7 +531,7 @@ if (activeStickers >= 10) {
       if (!result.ok) throw new Error(result.error);
       
       // Optional: Give a little confirmation when it finally syncs
-      showToast(deltaToSend > 0 ? `✅ Synced +${deltaToSend} stickers` : `✅ Synced undo`, "neutral");
+      showToast(deltaToSend > 0 ? `✅ Synced +${deltaToSend} stickers` : `✅ Synced removal`, "neutral");
 
     } catch (e) {
       // Revert if the server fails
@@ -731,7 +556,7 @@ if (activeStickers >= 10) {
     }
 
     if (action === 'clearBoard') {
-      const confirmClear = confirm("Are you sure you want to reset all stickers for this child?");
+      const confirmClear = confirm("Reset this child's stickers back to zero?\n\nDo this once you've paid out the money.");
       if (!confirmClear) return;
     }
 
@@ -742,16 +567,10 @@ if (activeStickers >= 10) {
     const backupTotal = kid.totalStickers;
     const backupRedeemed = kid.redeemedStickers;
 
-    if (action === 'redeemRow') {
-  kid.redeemedStickers += 10;
-  showToast("🎉 10 Stickers Redeemed! 30 mins added.", "success");
-} else if (action === 'redeemHalf') {
-  kid.redeemedStickers += 5;
-  showToast("✨ 5 Stickers Redeemed! 15 mins added.", "success");
-} else if (action === 'clearBoard') {
+    if (action === 'clearBoard') {
       kid.totalStickers = 0;
       kid.redeemedStickers = 0;
-      showToast("⚠️ Board Reset.", "error");
+      showToast("⚠️ Counter reset to zero.", "error");
     }
     
     updateUI(); 
